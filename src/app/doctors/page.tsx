@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { getErrorMessage } from "@/lib/error";
 import { Doctor } from "@/lib/types";
+import { DataTable, Column } from "@/components/DataTable";
+import { ToggleLeft, ToggleRight } from "lucide-react";
 
 export default function DoctorsPage() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -70,86 +72,104 @@ export default function DoctorsPage() {
     }
   };
 
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Doctors</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+  const columns: Column<Doctor>[] = [
+    {
+      key: "name",
+      header: "Doctor",
+      render: (d) => (
+        <div>
+          <p className="font-medium text-gray-900">{d.name}</p>
+          <p className="text-xs text-gray-500">{d.phone}</p>
+        </div>
+      ),
+    },
+    { key: "specialty", header: "Specialty", render: (d) => d.specialty },
+    {
+      key: "hospital",
+      header: "Hospital",
+      render: (d) => d.hospital?.name || "—",
+    },
+    {
+      key: "status",
+      header: "Status",
+      render: (d) => (
+        <span
+          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+            d.is_active
+              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20"
+              : "bg-rose-50 text-rose-700 ring-1 ring-rose-600/20"
+          }`}
         >
-          {showForm ? "Cancel" : "Add Doctor"}
+          {d.is_active ? "Active" : "Inactive"}
+        </span>
+      ),
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      render: (d) => (
+        <button
+          onClick={() => toggleStatus(d.id, d.is_active)}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+        >
+          {d.is_active ? (
+            <>
+              <ToggleRight className="w-4 h-4" /> Deactivate
+            </>
+          ) : (
+            <>
+              <ToggleLeft className="w-4 h-4" /> Activate
+            </>
+          )}
         </button>
+      ),
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 font-heading">Doctors</h1>
+          <p className="text-gray-500 mt-1">Manage surgeon accounts and approvals</p>
+        </div>
       </div>
 
-      {error && <p className="text-red-600 mb-4 text-sm">{error}</p>}
-
-      <input
-        type="text"
-        placeholder="Search doctors..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 w-full max-w-md border border-gray-300 rounded-md p-2"
-      />
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow mb-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border p-2 rounded" />
-            <input required placeholder="Phone (+91...)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="border p-2 rounded" />
-            <input required placeholder="Specialty" value={form.specialty} onChange={(e) => setForm({ ...form, specialty: e.target.value })} className="border p-2 rounded" />
-            <input placeholder="Hospital ID (optional)" value={form.hospital_id} onChange={(e) => setForm({ ...form, hospital_id: e.target.value })} className="border p-2 rounded" />
-            <input placeholder="Or Hospital Name (auto-create)" value={form.hospital_name} onChange={(e) => setForm({ ...form, hospital_name: e.target.value })} className="border p-2 rounded" />
-            <label className="flex items-center space-x-2">
-              <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
-              <span>Active</span>
+            <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input required placeholder="Phone (+91...)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input required placeholder="Specialty" value={form.specialty} onChange={(e) => setForm({ ...form, specialty: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input placeholder="Hospital ID (optional)" value={form.hospital_id} onChange={(e) => setForm({ ...form, hospital_id: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input placeholder="Or Hospital Name (auto-create)" value={form.hospital_name} onChange={(e) => setForm({ ...form, hospital_name: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <label className="flex items-center gap-2 px-3">
+              <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 text-indigo-600 rounded" />
+              <span className="text-sm text-gray-700">Active</span>
             </label>
           </div>
-          <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Create Doctor</button>
+          <div className="flex items-center gap-3">
+            <button type="submit" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors">Create Doctor</button>
+            <button type="button" onClick={() => setShowForm(false)} className="px-5 py-2.5 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl transition-colors">Cancel</button>
+          </div>
         </form>
       )}
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="text-left p-3 text-sm font-medium">Name</th>
-                <th className="text-left p-3 text-sm font-medium">Phone</th>
-                <th className="text-left p-3 text-sm font-medium">Specialty</th>
-                <th className="text-left p-3 text-sm font-medium">Hospital</th>
-                <th className="text-left p-3 text-sm font-medium">Status</th>
-                <th className="text-left p-3 text-sm font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {doctors.map((doctor) => (
-                <tr key={doctor.id} className="border-t">
-                  <td className="p-3">{doctor.name}</td>
-                  <td className="p-3">{doctor.phone}</td>
-                  <td className="p-3">{doctor.specialty}</td>
-                  <td className="p-3">{doctor.hospital?.name || "—"}</td>
-                  <td className="p-3">
-                    <span className={`px-2 py-1 rounded text-xs ${doctor.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                      {doctor.is_active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => toggleStatus(doctor.id, doctor.is_active)}
-                      className="text-indigo-600 hover:underline text-sm"
-                    >
-                      {doctor.is_active ? "Deactivate" : "Activate"}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        title="Doctors Directory"
+        subtitle="All registered surgeons and specialists"
+        data={doctors}
+        columns={columns}
+        loading={loading}
+        search={search}
+        onSearch={setSearch}
+        searchPlaceholder="Search doctors by name or phone..."
+        actionButton={{ label: "Add Doctor", onClick: () => setShowForm(!showForm) }}
+        emptyText="No doctors found."
+        keyExtractor={(d) => d.id}
+      />
     </div>
   );
 }

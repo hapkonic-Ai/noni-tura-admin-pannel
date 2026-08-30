@@ -5,6 +5,8 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { getErrorMessage } from "@/lib/error";
 import { Doctor, Patient } from "@/lib/types";
+import { DataTable, Column } from "@/components/DataTable";
+import { FileDown, User } from "lucide-react";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -66,83 +68,111 @@ export default function PatientsPage() {
     }
   };
 
+  const columns: Column<Patient>[] = [
+    {
+      key: "patient",
+      header: "Patient",
+      render: (p) => (
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+            <User className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="font-medium text-gray-900">{p.name}</p>
+            <p className="text-xs text-gray-500">{p.parent_phone}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "ageGender",
+      header: "Age / Gender",
+      render: (p) => (
+        <span className="text-sm text-gray-600">
+          {p.age} yrs · <span className="capitalize">{p.gender}</span>
+        </span>
+      ),
+    },
+    { key: "parent", header: "Parent", render: (p) => p.parent_name },
+    {
+      key: "doctor",
+      header: "Doctor",
+      render: (p) => p.doctor?.name || "—",
+    },
+    {
+      key: "bloodGroup",
+      header: "Blood",
+      render: (p) => (
+        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-600/20">
+          {p.blood_group || "—"}
+        </span>
+      ),
+    },
+    {
+      key: "created",
+      header: "Registered",
+      render: (p) => new Date(p.created_at).toLocaleDateString("en-IN"),
+    },
+  ];
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Patients</h1>
-        <div className="space-x-2">
-          <Link href="/patients/import" className="inline-block bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 font-heading">Patients</h1>
+          <p className="text-gray-500 mt-1">Manage patient records and bulk imports</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/patients/import"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-xl transition-colors"
+          >
+            <FileDown className="w-4 h-4" />
             Bulk Import
           </Link>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
-          >
-            {showForm ? "Cancel" : "Add Patient"}
-          </button>
         </div>
       </div>
 
-      {error && <p className="text-red-600 mb-4 text-sm">{error}</p>}
-
-      <input
-        type="text"
-        placeholder="Search patients..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 w-full max-w-md border border-gray-300 rounded-md p-2"
-      />
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow mb-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border p-2 rounded" />
-            <input required type="number" placeholder="Age" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} className="border p-2 rounded" />
-            <input required placeholder="Gender" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="border p-2 rounded" />
-            <input placeholder="Blood Group" value={form.blood_group} onChange={(e) => setForm({ ...form, blood_group: e.target.value })} className="border p-2 rounded" />
-            <input placeholder="Allergies" value={form.allergies} onChange={(e) => setForm({ ...form, allergies: e.target.value })} className="border p-2 rounded" />
-            <input required placeholder="Parent Name" value={form.parent_name} onChange={(e) => setForm({ ...form, parent_name: e.target.value })} className="border p-2 rounded" />
-            <input required placeholder="Parent Phone (+91...)" value={form.parent_phone} onChange={(e) => setForm({ ...form, parent_phone: e.target.value })} className="border p-2 rounded" />
-            <select required value={form.doctor_id} onChange={(e) => setForm({ ...form, doctor_id: e.target.value })} className="border p-2 rounded">
+            <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input required type="number" placeholder="Age" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input required placeholder="Gender" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input placeholder="Blood Group" value={form.blood_group} onChange={(e) => setForm({ ...form, blood_group: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input placeholder="Allergies" value={form.allergies} onChange={(e) => setForm({ ...form, allergies: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input required placeholder="Parent Name" value={form.parent_name} onChange={(e) => setForm({ ...form, parent_name: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <input required placeholder="Parent Phone (+91...)" value={form.parent_phone} onChange={(e) => setForm({ ...form, parent_phone: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
+            <select required value={form.doctor_id} onChange={(e) => setForm({ ...form, doctor_id: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
               <option value="">Select Doctor</option>
               {doctors.map((d) => (
                 <option key={d.id} value={d.id}>{d.name}</option>
               ))}
             </select>
-            <input placeholder="Hospital ID (optional)" value={form.hospital_id} onChange={(e) => setForm({ ...form, hospital_id: e.target.value })} className="border p-2 rounded" />
+            <input placeholder="Hospital ID (optional)" value={form.hospital_id} onChange={(e) => setForm({ ...form, hospital_id: e.target.value })} className="border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" />
           </div>
-          <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Create Patient</button>
+          <div className="flex items-center gap-3">
+            <button type="submit" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors">Create Patient</button>
+            <button type="button" onClick={() => setShowForm(false)} className="px-5 py-2.5 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl transition-colors">Cancel</button>
+          </div>
         </form>
       )}
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="text-left p-3 text-sm font-medium">Name</th>
-                <th className="text-left p-3 text-sm font-medium">Age / Gender</th>
-                <th className="text-left p-3 text-sm font-medium">Parent</th>
-                <th className="text-left p-3 text-sm font-medium">Doctor</th>
-                <th className="text-left p-3 text-sm font-medium">Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {patients.map((patient) => (
-                <tr key={patient.id} className="border-t">
-                  <td className="p-3">{patient.name}</td>
-                  <td className="p-3">{patient.age} / {patient.gender}</td>
-                  <td className="p-3">{patient.parent_name}<br/><span className="text-gray-500 text-xs">{patient.parent_phone}</span></td>
-                  <td className="p-3">{patient.doctor?.name || "—"}</td>
-                  <td className="p-3">{new Date(patient.created_at).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        title="Patients Directory"
+        subtitle="All registered patients"
+        data={patients}
+        columns={columns}
+        loading={loading}
+        search={search}
+        onSearch={setSearch}
+        searchPlaceholder="Search patients by name or phone..."
+        actionButton={{ label: "Add Patient", onClick: () => setShowForm(!showForm) }}
+        emptyText="No patients found."
+        keyExtractor={(p) => p.id}
+      />
     </div>
   );
 }
