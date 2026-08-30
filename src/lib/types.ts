@@ -75,10 +75,34 @@ export interface ConsentContentTemplate {
   updated_at: string;
 }
 
+export interface LayoutBlock {
+  id: string;
+  type: string;
+  title?: string;
+  visible?: boolean;
+  content?: string;
+  height?: string;
+  align?: "left" | "center" | "right";
+  columns?: 1 | 2;
+}
+
+export interface LayoutStyles {
+  page_size?: "A4" | "Letter";
+  page_margins?: string;
+  primary_color?: string;
+  font_family?: string;
+  font_size?: string;
+  line_height?: string;
+  section_spacing?: string;
+  border_style?: "none" | "solid" | "dashed";
+}
+
 export interface ConsentLayoutTemplate {
   id: string;
   name: string;
-  html: string;
+  html?: string;
+  blocks_json?: LayoutBlock[];
+  styles_json?: LayoutStyles;
   is_default: boolean;
   created_at: string;
   updated_at: string;
