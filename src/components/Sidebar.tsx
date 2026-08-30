@@ -35,8 +35,8 @@ function NavSection({ title, items }: { title: string; items: typeof mainNav }) 
   const pathname = usePathname();
 
   return (
-    <div className="mb-6">
-      <h3 className="px-4 text-xs font-semibold text-indigo-200/70 uppercase tracking-wider mb-2">
+    <div className="mb-5">
+      <h3 className="px-4 text-[10px] font-semibold text-indigo-200/60 uppercase tracking-wider mb-1.5">
         {title}
       </h3>
       <div className="space-y-1">
@@ -47,14 +47,14 @@ function NavSection({ title, items }: { title: string; items: typeof mainNav }) 
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center justify-between px-4 py-2.5 mx-2 rounded-xl text-sm transition-all duration-200 group ${
+              className={`flex items-center justify-between px-4 py-2 mx-2 rounded-lg text-sm transition-all duration-200 group ${
                 active
                   ? "bg-indigo-600 text-white shadow-md"
                   : "text-indigo-100 hover:bg-indigo-800/60 hover:text-white"
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`w-[18px] h-[18px] ${active ? "text-white" : "text-indigo-300 group-hover:text-white"}`} />
+                <Icon className={`w-4 h-4 ${active ? "text-white" : "text-indigo-300 group-hover:text-white"}`} />
                 <span className="font-medium">{item.label}</span>
               </div>
               <span
@@ -84,14 +84,14 @@ export function Sidebar() {
 
   return (
     <aside className="w-72 bg-indigo-900 text-white flex flex-col h-screen shrink-0">
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center border border-white/10">
-            <span className="text-lg font-bold text-white">N</span>
+      <div className="p-5 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-white/10 backdrop-blur flex items-center justify-center border border-white/10">
+            <span className="text-base font-bold text-white">N</span>
           </div>
           <div>
-            <h1 className="text-lg font-bold font-heading">Noni Tura</h1>
-            <p className="text-xs text-indigo-200/80">Admin Panel</p>
+            <h1 className="text-base font-bold font-heading leading-tight">Noni Tura</h1>
+            <p className="text-[11px] text-indigo-200/80">Admin Panel</p>
           </div>
         </div>
       </div>
@@ -102,19 +102,19 @@ export function Sidebar() {
         <NavSection title="Consent & Records" items={consentNav} />
       </nav>
 
-      <div className="p-4 m-4 rounded-2xl bg-indigo-800/40 border border-indigo-700/50">
+      <div className="p-4 mx-4 mb-4 rounded-2xl bg-indigo-800/40 border border-indigo-700/50">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold">
+          <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold shrink-0">
             {payload?.name?.charAt(0) || payload?.role?.charAt(0).toUpperCase() || "A"}
           </div>
-          <div>
-            <p className="text-sm font-medium text-white">{payload?.name || "Admin"}</p>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-white truncate">{payload?.name || "Admin"}</p>
             <p className="text-xs text-indigo-200/80 capitalize">{payload?.role || "superadmin"}</p>
           </div>
         </div>
         <button
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-indigo-100 bg-indigo-800 hover:bg-indigo-700 transition-colors border border-indigo-700/50"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-indigo-100 bg-indigo-800 hover:bg-indigo-700 transition-colors border border-indigo-700/50"
         >
           <LogOut className="w-4 h-4" />
           Logout
