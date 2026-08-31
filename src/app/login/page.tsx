@@ -62,7 +62,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative h-full min-h-full flex flex-col overflow-hidden">
+    <div className="relative min-h-screen flex flex-col overflow-hidden">
       {/* Background image with gradient overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
